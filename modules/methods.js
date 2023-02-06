@@ -62,9 +62,9 @@ const runMethod = async (methodName, type = 'GET', postBody = '') => {
       try {
 
        const resJson = await response.json()
-       // console.log(resJson)
-       // console.log(resJson.Error.Message)      
-       bot.sendMessage(tgUser, methodName + ' ' + type + ' ' + postBody + ': status '+ response.status + ' ' + resJson.Error.Message);
+    
+       //bot.sendMessage(tgUser, methodName + ' ' + type + ' ' + postBody + ': status '+ response.status + ' ' + resJson.Error.Message);
+       console.log(methodName + ' ' + type + ' ' + postBody + ': status '+ response.status + ' ' + resJson.Error.Message)
        return resJson.Error.Message}
 
        catch (err) {
