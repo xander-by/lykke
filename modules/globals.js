@@ -28,13 +28,14 @@ const pairsFill = () => {
       pair: pair,
       minVolume: 0.001,
       minVolBuy: 10,
-      minVolSell: 0.0001,
+      minVolSell: 0.001,
       priceAdd: 0.002, // price 22780,000 - 22780,002
       priceDepth: 3, // price 22780,000 - 3 digits after Zero
       floorDepth: 4, // volume 0.00011111 - 0.00010000
       volDepth: 8, // volume 0.00010000 - 8 digits after Zero
-      volCorrection: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
-      suffix: "999", // volume 0.00020000 - 0.00019999 999
+      volCorrectionBuy: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
+      volCorrectionSell: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)    
+      sufLen: 3,  // 0.000...167
     };
   
     pair = "ETHUSD";
@@ -47,9 +48,26 @@ const pairsFill = () => {
       priceDepth: 5, // price 22780,00000 - 5 digits after Zero
       floorDepth: 4, // volume 0.00011111 - 0.00010000
       volDepth: 8, // volume 0.00010000 - 8 digits after Zero
-      volCorrection: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
-      suffix: "999", // volume 0.00020000 - 0.00019999 999
+      volCorrectionBuy: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
+      volCorrectionSell: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)   
+      sufLen: 3,  // 0.000...167      
     };
+    
+    pair = "USDCHF";
+    pairSettings[pair] = {
+      pair: pair,
+      minVolume: 10,
+      minVolBuy: 10,
+      minVolSell: 10,
+      priceAdd: 0.00002, // price 22780,00000 - 22780,00002
+      priceDepth: 5, // price 22780,00000 - 5 digits after Zero
+      floorDepth: 4, // volume 0.00011111 - 0.00010000
+      volDepth: 2, // volume 0.00010000 - 8 digits after Zero
+      volCorrectionBuy: (1 / 10 ** 2).round(2), // volume 0.00020000 - 0.00019999 (to be different from others)
+      volCorrectionSell: (1 / 10 ** 2).round(2), // volume 0.00020000 - 0.00019999 (to be different from others)   
+      sufLen: 2,  // 0.000...167      
+    };    
+    
   };
 
   // update wallet info

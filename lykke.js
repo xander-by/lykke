@@ -54,43 +54,81 @@ const makeOrder = async (pair, resOrdersArray, typeBuySell, settings) => {
   let firstValue = undefined;
   let ourOrderExist = false
   const plusMinus = typeBuySell === "Sell" ? -1 : 1;
-  const val = (typeBuySell === "Sell") ? pair.slice(0, 3) : pair.slice(-3); // USD - BTCUSD
+  const val = (typeBuySell === "Sell") ? pair.slice(0, 3) : pair.slice(-settings.sufLen); // USD - BTCUSD
+  
+  let suffix = 0
+  if (typeBuySell === "Sell") suffix = settings.volCorrectionSell.toFixed(settings.volDepth).slice(-settings.sufLen)
+  else                        suffix = settings.volCorrectionBuy.toFixed(settings.volDepth).slice(-settings.sufLen)
+   
+  const randomNumber = Math.floor(Math.random() * 10**(settings.sufLen-1))+1 
+  const newVolCorrection = randomNumber/10**settings.volDepth  
+  
+        if (pair === 'USDCHF') {
+          console.log('before valCor ' + settings.volCorrectionSell)
+          console.log('before suffix ' + suffix)          
+          console.log('newVolCorrection ' + newVolCorrection)
+        }   
 
   if (typeBuySell === "Buy")  index = resOrdersArray[0].isBuy ? 0 : 1;
   if (typeBuySell === "Sell") index = resOrdersArray[0].isBuy ? 1 : 0;
 
   for (const el of resOrdersArray[index].Prices) {
-    if (el.Volume.toString().slice(-3) === settings.suffix) ourOrderExist = true
-    if (plusMinus * el.Volume >= settings.minVolume &&
-      el.Volume.toString().slice(-3) !== settings.suffix) {
+    let isOur = false
+    if (+el.Volume.toString().slice(-settings.sufLen) === (10**settings.sufLen - +suffix)) {
+       ourOrderExist = true
+       isOur = true
+       
+      if (pair === 'USDCHF') {
+          console.log('НАША')
+      }       
+       }
+
+    if (pair === 'USDCHF') {
+        console.log(+el.Volume.toString().slice(-settings.sufLen)  + '  ' + (10**settings.sufLen - +suffix))
+    }
+
+    if (plusMinus * el.Volume >= settings.minVolume && !isOur) {
       firstValue = el;
       break;
     }
   }
 
-  // CHECK IF VERY CLOSE TO OTHER SIDE
-  // firstValue.Price
+   // CHECK IF VERY CLOSE TO OTHER SIDE
+   // firstValue.Price
+   const myPrice = (firstValue.Price + plusMinus * settings.priceAdd)
+          .round(settings.priceDepth)
+          
+         // console.log( Math.abs(firstValue.Price - myPrice) + '    ' +settings.priceAdd)
 
-  const myVolume = ((wallet[val] / (typeBuySell === "Sell" ? 1 : firstValue.Price))
-      .floor(settings.floorDepth) - settings.volCorrection).round(settings.volDepth);
+   if (!ourOrderExist || Math.abs(firstValue.Price - myPrice) > settings.priceAdd ) {
+   
+       if (typeBuySell === "Sell")  settings.volCorrectionSell = newVolCorrection
+       else                         settings.volCorrectionBuy  = newVolCorrection
 
-  if (!ourOrderExist) {
-    botOptions.orderIsRunning = true;
+       const myVolume = ((wallet[val] / (typeBuySell === "Sell" ? 1 : firstValue.Price))
+          .floor(settings.floorDepth) - newVolCorrection).round(settings.volDepth);
+          
+          
+          
+         if (pair === 'USDCHF') {
+          console.log('myVolume ' + myVolume)
+          console.log('after ' + settings.volCorrectionSell)
+        }   
+  
+        // ********************
+        botOptions.orderIsRunning = true;
+        await cancellAllOrders(pair, typeBuySell);
+        const postBody = {
+            AssetPairId: pair,
+            OrderAction: typeBuySell,
+            Volume: myVolume,
+            Price:  myPrice,
+        };
+        const response = await setOrder(pair, postBody);
+        botOptions.orderIsRunning = false;
+        // ********************    
 
-    await cancellAllOrders(pair, typeBuySell);
-
-    const postBody = {
-        AssetPairId: pair,
-        OrderAction: typeBuySell,
-        Volume: myVolume,
-        Price: (firstValue.Price + plusMinus * settings.priceAdd)
-          .round(settings.priceDepth),
-    };
-    const response = await setOrder(pair, postBody);
-
-    botOptions.orderIsRunning = false;
-    //console.log(response);
-  }
+   }
   
   //else console.log('not changed...')
 
@@ -107,4 +145,7 @@ setInterval(updateWallet, 5 * 1000);
 // await buySell("ETHUSD", '');
 
 setInterval(function () {
- buySell("ETHUSD", '')}, intervalSeconds * 1000);
+ buySell("ETHUSD", 'Sell')}, intervalSeconds * 1000);
+
+setInterval(function () {
+ buySell("BTCUSD", 'Buy')}, intervalSeconds * 1000);
