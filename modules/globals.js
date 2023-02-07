@@ -26,47 +26,56 @@ const pairsFill = () => {
     pair = "BTCUSD";
     pairSettings[pair] = {
       pair: pair,
-      minVolume: 0.001,
-      minVolBuy: 10,
-      minVolSell: 0.001,
+      orderIsRunning: false,
+      minVolume: 0.01,
+      minMyVolBuy: 10,
+      minMyVolSell: 0.001,
       priceAdd: 0.002, // price 22780,000 - 22780,002
       priceDepth: 3, // price 22780,000 - 3 digits after Zero
-      floorDepth: 4, // volume 0.00011111 - 0.00010000
+      //floorVolume: 4, // volume 0.00011111 - 0.00010000
       volDepth: 8, // volume 0.00010000 - 8 digits after Zero
       volCorrectionBuy: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
       volCorrectionSell: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)    
       sufLen: 3,  // 0.000...167
     };
+    pairSettings[pair].volCorrectionBuy = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth)
+    pairSettings[pair].volCorrectionSell = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth)
+    pairSettings[pair].floorVolume = pairSettings[pair].volDepth - pairSettings[pair].sufLen   
+
   
     pair = "ETHUSD";
     pairSettings[pair] = {
       pair: pair,
-      minVolume: 0.1,
-      minVolBuy: 10,
-      minVolSell: 0.2,
+      orderIsRunning: false,
+      minVolume: 0.5,
+      minMyVolBuy: 10,
+      minMyVolSell: 0.2,
       priceAdd: 0.00002, // price 22780,00000 - 22780,00002
       priceDepth: 5, // price 22780,00000 - 5 digits after Zero
-      floorDepth: 4, // volume 0.00011111 - 0.00010000
+     //floorVolume: 4, // volume 0.00011111 - 0.00010000
       volDepth: 8, // volume 0.00010000 - 8 digits after Zero
-      volCorrectionBuy: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)
-      volCorrectionSell: (1 / 10 ** 8).round(8), // volume 0.00020000 - 0.00019999 (to be different from others)   
       sufLen: 3,  // 0.000...167      
     };
+    pairSettings[pair].volCorrectionBuy = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth)
+    pairSettings[pair].volCorrectionSell = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth)
+    pairSettings[pair].floorVolume = pairSettings[pair].volDepth - pairSettings[pair].sufLen   
     
     pair = "USDCHF";
     pairSettings[pair] = {
       pair: pair,
-      minVolume: 10,
-      minVolBuy: 10,
-      minVolSell: 10,
+      orderIsRunning: false,
+      minVolume: 100,
+      minMyVolBuy: 10,
+      minMyVolSell: 10,
       priceAdd: 0.00002, // price 22780,00000 - 22780,00002
       priceDepth: 5, // price 22780,00000 - 5 digits after Zero
-      floorDepth: 4, // volume 0.00011111 - 0.00010000
-      volDepth: 2, // volume 0.00010000 - 8 digits after Zero
-      volCorrectionBuy: (1 / 10 ** 2).round(2), // volume 0.00020000 - 0.00019999 (to be different from others)
-      volCorrectionSell: (1 / 10 ** 2).round(2), // volume 0.00020000 - 0.00019999 (to be different from others)   
-      sufLen: 2,  // 0.000...167      
-    };    
+     // floorVolume: 0, // volume 0.213 - 0.21
+      volDepth: 2, // volume 10.88 - 2 digits after Zero
+      sufLen: 2,  // 0.99      
+    };   
+    pairSettings[pair].volCorrectionBuy = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth)
+    pairSettings[pair].volCorrectionSell = (1 / 10 ** pairSettings[pair].volDepth).round(pairSettings[pair].volDepth) 
+    pairSettings[pair].floorVolume = pairSettings[pair].volDepth - pairSettings[pair].sufLen   
     
   };
 
@@ -87,4 +96,4 @@ const updateWallet = async (number) => {
     wallet.date = new Date();
   };
 
-export { updateWallet, roundFuncs, pairsFill, wallet, pairSettings, botOptions};
+export { updateWallet, roundFuncs, pairsFill, wallet, pairSettings};
