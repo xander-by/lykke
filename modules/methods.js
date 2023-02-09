@@ -53,7 +53,7 @@ const runMethod = async (methodName, type = 'GET', postBody = '') => {
        options)
    } catch (err) {
        console.log(err.message);
-       bot.sendMessage(tgUser, methodName + ': ' + err.message);
+       //bot.sendMessage(tgUser, methodName + ': ' + err.message);
        return err.message
    }
    
